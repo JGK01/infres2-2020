@@ -42,13 +42,13 @@ try:
             if msg_client != "":
                     msg_client_decrypted = cipherDecrypt.decrypt(msg_client).decode("Utf8")
                     print (f"\nFrom {address[0]} : {msg_client_decrypted} ")
-                    c.execute(f'INSERT INTO messages VALUES ("localhost","{address[0]}","{msg_client_decrypted}")')
+                    c.execute('INSERT INTO messages VALUES (?,?,?)', ("localhost", address[0], msg_client_decrypted))
                     db.commit()
                     msg_server = input("You : ")
                     if msg_server == "q":
                         client.close()
                     else:
-                        c.execute(f'INSERT INTO messages VALUES ("{address[0]}","localhost","{msg_server}")')
+                        c.execute('INSERT INTO messages VALUES (?,?,?)', (address[0], "localhost", msg_server))
                         db.commit()
                         msg_server_encrypted = cipherEncrypt.encrypt(msg_server.encode("Utf8"))
                         client.send(msgpack.packb(msg_server_encrypted))

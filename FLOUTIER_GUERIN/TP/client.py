@@ -20,7 +20,7 @@ hote = "159.31.59.130"
 port = 15558
 
 #COnfiguration & Save to base
-conn = sqlite3.connect('database.db')
+conn = sqlite3.connect('database2.db')
 c = conn.cursor()
 c.execute(''' SELECT count(name) FROM sqlite_master WHERE type='table' AND name='messages' ''')
 
@@ -76,13 +76,13 @@ while True :
     my_msg_serial=msgpack.packb(my_msg_encrypted)
 
     socket.send(my_msg_serial)
-    c.execute(f'INSERT INTO messages VALUES ("localhost","server","{my_msg.decode("Utf8")}")')
+    c.execute('INSERT INTO messages VALUES (?,?,?)', ("localhost", "server", my_msg.decode("Utf8")))
     conn.commit()
 
     response = msgpack.unpackb(socket.recv(255))
     final_msg = cipher2.decrypt(response).decode("Utf8")
     print("server : {}".format(final_msg))
-    c.execute(f'INSERT INTO messages VALUES ("server","localhost","{final_msg}")')
+    c.execute('INSERT INTO messages VALUES (?,?,?)', ("server", "localhost", final_msg))
     conn.commit()
 
 print ("Close")
